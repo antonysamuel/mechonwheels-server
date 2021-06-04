@@ -91,3 +91,21 @@ def addMockData(req):
         'len' : len(lst)
     }
     return Response(resp)
+
+
+from django.contrib.gis.geos import Point
+def setLocaiton(req):
+    query = WorkshopAccount.objects.all()
+    lst = []
+    for w in query:
+        # print(w.name)
+        lat = str(w.latitude)
+        lon = str(w.longitude)
+        w.location =  Point(
+                float(w.longitude),
+                float(w.latitude),
+                srid=4326
+            )
+        w.save()
+       
+    return Response(lst)
