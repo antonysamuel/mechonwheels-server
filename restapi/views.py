@@ -1,8 +1,7 @@
-import re
 from django.contrib.auth import authenticate
-
+from .models import WorkshopAccount
 from rest_framework import serializers
-from restapi.serializers import UserSerializer
+from restapi.serializers import SearchSerializer, UserSerializer
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
@@ -49,3 +48,10 @@ class HomeView(APIView):
         return Response(content)
         
 
+class SearchView(APIView):
+    permission_classes = (AllowAny,)
+    def get(self,req):
+        print(req.GET.get('query'))
+        queryset = WorkshopAccount.objects.filter(address__contains = req.GET.get('query'))
+        serializers = SearchSerializer(queryset,many=True)
+        return Response(serializers.data)

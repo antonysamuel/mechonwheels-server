@@ -1,3 +1,4 @@
+from restapi.models import WorkshopAccount
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -19,3 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class SearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: WorkshopAccount
+        fields = ['workshopName,address,phone,latitude,longitude']
