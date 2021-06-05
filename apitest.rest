@@ -1,2 +1,2 @@
-GET http://127.0.0.1:8000/home/ HTTP/1.1
+GET http://127.0.0.1:8000/search?query=paravur HTTP/1.1
 Authorization: Token e1018466abfa66c2282d86d9b7fa05cc35f9c154

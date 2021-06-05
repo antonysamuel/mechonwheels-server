@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from .models import WorkshopAccount
+from django.db.models import Q
 # Create your views here.
 
 
@@ -51,7 +53,7 @@ class HomeView(APIView):
 class SearchView(APIView):
     permission_classes = (AllowAny,)
     def get(self,req):
-        print(req.GET.get('query'))
-        queryset = WorkshopAccount.objects.filter(address__contains = req.GET.get('query'))
+        query = req.GET.get('query')
+        queryset = WorkshopAccount.objects.filter(Q(address__contains = query) | Q(workshopName__contains = query) )
         serializers = SearchSerializer(queryset,many=True)
         return Response(serializers.data)
