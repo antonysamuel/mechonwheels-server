@@ -9,6 +9,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .models import WorkshopAccount
 from django.db.models import Q
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import Distance
 # Create your views here.
 
 
@@ -55,5 +57,17 @@ class SearchView(APIView):
     def get(self,req):
         query = req.GET.get('query')
         queryset = WorkshopAccount.objects.filter(Q(address__contains = query) | Q(workshopName__contains = query) )
+        serializers = SearchSerializer(queryset,many=True)
+        return Response(serializers.data)
+
+
+class NearbyWorkshops(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self,req):
+        lat = float(req.data.get('lat'))
+        lon = float(req.data.get('lon'))
+        radius = 10
+        loc = Point(lon,lat)
+        queryset = WorkshopAccount.objects.filter(location__distance_lt=(loc,Distance(km=radius)))
         serializers = SearchSerializer(queryset,many=True)
         return Response(serializers.data)
