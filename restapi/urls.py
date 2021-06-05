@@ -4,6 +4,5 @@ urlpatterns = [
     path('register/',views.RegisterView.as_view()),
     path('login/',views.LoginView.as_view()),
     path('home/',views.HomeView.as_view()),
-    path('mock/',views.addMockData),
-    path('mockloc/',views.setLocaiton)
+
 ]
