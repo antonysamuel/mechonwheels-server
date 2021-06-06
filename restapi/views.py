@@ -69,7 +69,8 @@ class NearbyWorkshops(APIView):
         radius = 10
         loc = Point(lon,lat)
         print(lat,lon,loc)
-        queryset = WorkshopAccount.objects.filter(location__dwithin=(loc,10))    
+        # queryset = WorkshopAccount.objects.filter(location__dwithin=(loc,10))    
+        queryset = WorkshopAccount.objects.filter(location__distance_lt=(loc, Distance(km=radius)))
         print(queryset)
         serializers = SearchSerializer(queryset,many=True)
         return Response(serializers.data)

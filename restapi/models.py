@@ -15,7 +15,7 @@ class   WorkshopAccount(models.Model):
     user = OneToOneField(User,on_delete=CASCADE)
     workshopName = models.CharField(max_length=60)
     address = models.CharField(max_length=50)
-    phone = models.IntegerField(default=9999999999)
+    phone = models.BigIntegerField(default=9999999999)
     latitude = models.DecimalField(max_digits=12, decimal_places=9,default=0)
     longitude = models.DecimalField(max_digits=12, decimal_places=9,default=0)
     location = models.PointField(default=Point(0.0, 0.0))
