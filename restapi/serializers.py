@@ -25,4 +25,4 @@ class UserSerializer(serializers.ModelSerializer):
 class SearchSerializer(serializers.ModelSerializer):
     class Meta:
         model= WorkshopAccount
-        fields = ['workshopName','address','phone','latitude','longitude']
+        fields = ['user','workshopName','address','phone','latitude','longitude']

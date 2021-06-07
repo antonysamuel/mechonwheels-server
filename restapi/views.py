@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
-from .models import WorkshopAccount
+from django.contrib.auth.models import User
+from .models import BookingDetails, WorkshopAccount
 from rest_framework import serializers
 from restapi.serializers import SearchSerializer, UserSerializer
 from django.shortcuts import render
@@ -56,9 +57,9 @@ class SearchView(APIView):
     permission_classes = (AllowAny,)
     def get(self,req):
         query = req.GET.get('query')
-        print(query)
+        # print(query)
         queryset = WorkshopAccount.objects.filter(Q(address__icontains = query) | Q(workshopName__icontains = query) )
-        print(queryset)
+        # print(queryset)
         serializers = SearchSerializer(queryset,many=True)
         return Response(serializers.data)
 
@@ -78,3 +79,23 @@ class NearbyWorkshops(APIView):
         return Response(serializers.data)
 
 
+
+
+class BookServices(APIView):
+    permission_classes = (AllowAny,)
+    def post(self,req):
+        user = User.objects.get(username = req.data.get('username'))
+        workshop = WorkshopAccount.objects.get(user = req.data.get('uid'))
+        msg = req.data.get('msg')
+        lat = req.data.get('lat')
+        lon = req.data.get('lon')
+        booking = BookingDetails.objects.create(user = user,workshop = workshop,msg = msg)
+        booking.latitude = lat
+        booking.longitude = lon
+        booking.save()
+        content = {}
+        content['user'] = user.username
+        content['workshop'] = workshop.address
+        content['msg'] = msg
+        content['workshopUser'] = workshop.user.username
+        return Response(content)

@@ -1,9 +1,12 @@
-GET http://127.0.0.1:8000/search/?query=Ernakulam
+POST http://127.0.0.1:8000/bookService/ HTTP/1.1
 content-type: application/json
 Authorization: Token 65df7650952da1f48aabab2a0fa86fffdfc9aa9d
 
-# {
+{
     
-#     "lat": "10.1446",
-#     "lon": "76.2273"
-# }
+    "uid" : 238,
+    "username": "akash",
+    "msg" :  "Come fast",
+    "lat" : 10.54875630,
+    "lon" : 27.54465656565
+}
