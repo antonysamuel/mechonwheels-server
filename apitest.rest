@@ -1,9 +1,9 @@
-POST http://127.0.0.1:8000/nearby/ HTTP/1.1
+GET http://127.0.0.1:8000/search/?query=Ernakulam
 content-type: application/json
 Authorization: Token 65df7650952da1f48aabab2a0fa86fffdfc9aa9d
 
-{
+# {
     
-    "lat": "10.1446",
-    "lon": "76.2273"
-}
+#     "lat": "10.1446",
+#     "lon": "76.2273"
+# }

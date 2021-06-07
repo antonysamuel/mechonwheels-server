@@ -56,7 +56,9 @@ class SearchView(APIView):
     permission_classes = (AllowAny,)
     def get(self,req):
         query = req.GET.get('query')
-        queryset = WorkshopAccount.objects.filter(Q(address__contains = query) | Q(workshopName__contains = query) )
+        print(query)
+        queryset = WorkshopAccount.objects.filter(Q(address__icontains = query) | Q(workshopName__icontains = query) )
+        print(queryset)
         serializers = SearchSerializer(queryset,many=True)
         return Response(serializers.data)
 

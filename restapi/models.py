@@ -11,7 +11,7 @@ from django.contrib.auth.models import AbstractUser, User
 # Create your models here.
 
 
-class   WorkshopAccount(models.Model):
+class WorkshopAccount(models.Model):
     user = OneToOneField(User,on_delete=CASCADE)
     workshopName = models.CharField(max_length=60)
     address = models.CharField(max_length=50)
