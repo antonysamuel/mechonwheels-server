@@ -1,4 +1,6 @@
-from restapi.models import WorkshopAccount
+from django.db.models import fields
+from restapi import models
+from restapi.models import BookingDetails, WorkshopAccount
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -26,3 +28,17 @@ class SearchSerializer(serializers.ModelSerializer):
     class Meta:
         model= WorkshopAccount
         fields = ['user','workshopName','address','phone','latitude','longitude']
+
+
+
+
+class WorkUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username','email','first_name']
+
+class WorkshopWorksSerializers(serializers.ModelSerializer):
+    user = WorkUserSerializer()
+    class Meta:
+        model = BookingDetails
+        fields = ['id','created','latitude','longitude','msg','user']

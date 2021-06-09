@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import BookingDetails, WorkshopAccount
 from rest_framework import serializers
-from restapi.serializers import SearchSerializer, UserSerializer
+from restapi.serializers import SearchSerializer, UserSerializer, WorkshopWorksSerializers
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
@@ -39,17 +39,18 @@ class LoginView(APIView):
             token,create = Token.objects.get_or_create(user = user)
             content['token'] = token.key
             return Response(content)
-        return Response({'err': 'Invalid Credentials'})
+        return Response({'err': 'Invalid Credentials'}) 
 
 
 
 class HomeView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     def get(self,req):
-        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
-        content = {}     
+        print(req.META.get('HTTP_AUTHORIZATION'))
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user        
+        content = {}         
         content['username'] = user.username
-        content['name'] = user.first_name
+        content['name'] = WorkshopAccount.objects.get(user = user).workshopName
         return Response(content)
         
 
@@ -99,3 +100,18 @@ class BookServices(APIView):
         content['msg'] = msg
         content['workshopUser'] = workshop.user.username
         return Response(content)
+
+
+class WorkshopWorks(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self,req):
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        workshop = WorkshopAccount.objects.get(user = user)
+        works = BookingDetails.objects.filter(workshop = workshop)
+        content = {}
+        if len(works) == 0:
+            content["Works"] = "None"
+            return Response(content)
+        serializer = WorkshopWorksSerializers(works,many = True)
+        return Response(serializer.data)
+
