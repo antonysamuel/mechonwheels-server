@@ -38,12 +38,23 @@ class LoginView(APIView):
         if user is not None:
             token,create = Token.objects.get_or_create(user = user)
             content['token'] = token.key
+            content['name'] = user.first_name
             return Response(content)
         return Response({'err': 'Invalid Credentials'}) 
 
 
 
 class HomeView(APIView):
+    permission_classes = (AllowAny,)
+    def get(self,req):
+        print(req.META.get('HTTP_AUTHORIZATION'))
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user        
+        content = {}         
+        content['username'] = user.username
+        content['name'] = user.first_name
+        return Response(content)
+
+class WorkshopHomeView(APIView):
     permission_classes = (AllowAny,)
     def get(self,req):
         print(req.META.get('HTTP_AUTHORIZATION'))
