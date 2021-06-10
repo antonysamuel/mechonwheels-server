@@ -23,6 +23,13 @@ class WorkshopAccount(models.Model):
         return self.workshopName
 
 
+status_choices = (
+    ('1','Pending'),    
+    ('2','On Progress'),
+    ('3','Completed'),
+    ('4','Cancelled'),
+)
+
 class BookingDetails(models.Model):
     user = ForeignKey(User,on_delete=CASCADE)
     workshop = ForeignKey(WorkshopAccount,on_delete=CASCADE)
@@ -30,6 +37,11 @@ class BookingDetails(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     latitude = models.DecimalField(max_digits=12, decimal_places=9,default=0)
     longitude = models.DecimalField(max_digits=12, decimal_places=9,default=0)
+    status = models.CharField(choices=status_choices,max_length=20,default='1')
+
+    
+
+    
 
 
     def __str__(self):

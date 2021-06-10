@@ -41,4 +41,4 @@ class WorkshopWorksSerializers(serializers.ModelSerializer):
     user = WorkUserSerializer()
     class Meta:
         model = BookingDetails
-        fields = ['id','created','latitude','longitude','msg','user']
+        fields = ['id','created','latitude','longitude','msg','user','status']
