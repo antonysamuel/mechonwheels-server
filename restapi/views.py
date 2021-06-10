@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from .models import BookingDetails, WorkshopAccount
+from django.db.models.query import QuerySet
+from rest_framework import views
+from .models import BookingDetails, Cart, Orders, Products, WorkshopAccount
 from rest_framework import serializers
-from restapi.serializers import SearchSerializer, UserSerializer, WorkshopWorksSerializers
+from restapi.serializers import CartSerializer, OrderSerializer, ProductSerializer, SearchSerializer, UserSerializer, WorkshopWorksSerializers
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
@@ -126,3 +128,98 @@ class WorkshopWorks(APIView):
         serializer = WorkshopWorksSerializers(works,many = True)
         return Response(serializer.data)
 
+
+
+
+#########################
+from rest_framework import viewsets
+
+class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)    
+    queryset = Products.objects.all()
+    serializer_class = ProductSerializer
+
+
+
+class CartViewSet(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self,req):       
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        print(user)
+        queryset = Cart.objects.filter(user = user)
+        print(queryset)
+        serializer = CartSerializer(queryset,many = True)
+        return Response(serializer.data)
+
+
+
+class SearchProducts(APIView):
+    permission_classes = (AllowAny,)
+    def get(self,req):
+        query = req.GET.get('query')
+        print(query)
+        queryset = Products.objects.filter(name__icontains=query)
+        serializer = ProductSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+
+class AddtoCart(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self,req):
+        prodId = req.data.get('id')
+        product = Products.objects.get(id = prodId)
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user      
+        cart = Cart(user = user,product = product)
+        print(user)
+        cart.save()
+        queryset = Cart.objects.filter(user = user)
+        serializer = CartSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+
+
+class CreateOrder(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self,req):
+        address = req.data.get("addr")
+        prodId = req.data.get("id")
+        print(address)
+        product = Products.objects.get(id = prodId)
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        order = Orders(product = product,user = user,address=address)
+        order.save()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+
+
+class RemoveCart(APIView):
+    permission_classes = (IsAuthenticated,)
+    def delete(self,req):
+        id = int(req.data.get('id'))
+        print(id)
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        product = Products.objects.get(id = id)
+        cart = Cart.objects.filter(user = user)    
+        todelete = cart.filter(product = product)
+        for d in todelete:
+            d.delete()
+    
+        return Response({'status': 'ok'})
+
+
+class OrderProducts(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self,req):
+        address = req.data.get("addr")
+        products = req.data.get("products")
+        lat = req.data.get('lat')
+        lon = req.data.get('lon')
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        for id in products:
+            print(id)
+            product = Products.objects.get(id = id)
+            order = Orders(product = product,user = user,latitude = lat,longitude = lon,address = address)
+            order.save()
+
+        # product = Products.objects.get(id = prodId)
+        return Response({'status': 'ok'})

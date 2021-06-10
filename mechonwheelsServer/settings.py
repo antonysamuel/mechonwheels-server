@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.gis',
+    'mptt',
 
 ]
 
@@ -141,3 +142,7 @@ REST_FRAMEWORK = {
     ),
 
 }
+import os
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

@@ -1,6 +1,6 @@
 from django.db.models import fields
 from restapi import models
-from restapi.models import BookingDetails, WorkshopAccount
+from restapi.models import BookingDetails, Cart, Orders, Products, WorkshopAccount
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -42,3 +42,39 @@ class WorkshopWorksSerializers(serializers.ModelSerializer):
     class Meta:
         model = BookingDetails
         fields = ['id','created','latitude','longitude','msg','user','status']
+
+
+
+
+
+
+######################################################
+class ProductSellerName(serializers.Serializer):
+    class Meta:
+        models = WorkshopAccount
+        fields = ('workshopName')
+
+class ProductSerializer(serializers.ModelSerializer):
+    seller = serializers.CharField(source='workshop.workshopName')
+    class Meta:
+        model = Products
+        fields = ('id','name','image','price','desc','seller')
+
+
+
+
+
+class CartSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    class Meta:
+        model = Cart
+        fields = ('id','product')
+
+
+        
+class OrderSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    
+    class Meta:
+        model = Orders
+        fields = ('id','product','status')
