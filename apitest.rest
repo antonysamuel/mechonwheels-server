@@ -1,16 +1,2 @@
-GET http://127.0.0.1:8000/searchProducts/?query=product HTTP/1.1
-# content-type: application/json
-Authorization: Token 65df7650952da1f48aabab2a0fa86fffdfc9aa9d
-# {
-#     "addr" : "skahsioah randm, address",
-#     "products" : [1,2,3,5,4]
-# }
-
-# {
-    
-#     "uid" : 238,
-#     "username": "akash",
-#     "msg" :  "Come soon",
-#     "lat" : 10.54875630,
-#     "lon" : 27.54465656565
-# }
+GET http://127.0.0.1:8000/listmyProd/ HTTP/1.1
+Authorization: Token d4662dbc34c92abb065764d5e030558e0e507cbb

@@ -71,7 +71,7 @@ order_status_choices = (
 )
 
 
-
+from django.utils import timezone
 class Orders(models.Model):
     product = ForeignKey(Products,on_delete=CASCADE)
     user = ForeignKey(User,on_delete=CASCADE)

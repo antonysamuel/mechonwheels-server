@@ -73,8 +73,15 @@ class CartSerializer(serializers.ModelSerializer):
 
         
 class OrderSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-    
+    product = ProductSerializer()    
     class Meta:
         model = Orders
         fields = ('id','product','status')
+
+
+class SellerOrderSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()   
+    username = serializers.CharField(source='user.username') 
+    class Meta:
+        model = Orders
+        fields = ('id','product','status','address','latitude','longitude','username')

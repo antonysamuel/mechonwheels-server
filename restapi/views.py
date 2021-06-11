@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from rest_framework import views
 from .models import BookingDetails, Cart, Orders, Products, WorkshopAccount
 from rest_framework import serializers
-from restapi.serializers import CartSerializer, OrderSerializer, ProductSerializer, SearchSerializer, UserSerializer, WorkshopWorksSerializers
+from restapi.serializers import CartSerializer, OrderSerializer, ProductSerializer, SearchSerializer, SellerOrderSerializer, UserSerializer, WorkshopWorksSerializers
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
@@ -120,7 +120,7 @@ class WorkshopWorks(APIView):
     def get(self,req):
         user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
         workshop = WorkshopAccount.objects.get(user = user)
-        works = BookingDetails.objects.filter(workshop = workshop)
+        works = BookingDetails.objects.filter(workshop = workshop).order_by('created')
         content = {}
         if len(works) == 0:
             content["Works"] = "None"
@@ -129,6 +129,17 @@ class WorkshopWorks(APIView):
         return Response(serializer.data)
 
 
+class ChangeWorkStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
+    def post(self,req):
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        workshop = WorkshopAccount.objects.get(user = user)
+        works = BookingDetails.objects.filter(workshop = workshop)
+        work = works.get(id = req.data.get('id'))
+        work.status = req.data.get('status')
+        work.save()
+        return Response({'status': 'ok'})
 
 
 #########################
@@ -223,3 +234,21 @@ class OrderProducts(APIView):
 
         # product = Products.objects.get(id = prodId)
         return Response({'status': 'ok'})
+
+
+
+class ListSellerBookings(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self,req):
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        queryset = Orders.objects.filter(product__workshop__user = user)
+        serializer = SellerOrderSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+class ListSellerProducts(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self,req):
+        user = Token.objects.get(key = req.META.get('HTTP_AUTHORIZATION')[6:]).user
+        queryset = Products.objects.filter(workshop__user = user)
+        serializer = ProductSerializer(queryset,many=True)
+        return Response(serializer.data)
